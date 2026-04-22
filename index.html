@@ -1,0 +1,1293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mangalmurti Clinic – General Case Sheet</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+  :root {
+    --cream: #faf7f2;
+    --warm-white: #fffef9;
+    --gold: #b8860b;
+    --gold-light: #d4a017;
+    --gold-pale: #f5ecd0;
+    --forest: #2c4a3e;
+    --forest-light: #3d6b5c;
+    --ink: #1a1a1a;
+    --muted: #6b6357;
+    --border: #e0d8cc;
+    --shadow: rgba(44, 74, 62, 0.10);
+    --section-bg: #ffffff;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--cream);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--forest);
+    padding: 0;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.18);
+  }
+  .header-inner {
+    max-width: 980px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 18px 28px;
+  }
+  .header-logo { display: flex; align-items: center; gap: 14px; }
+  .logo-mark {
+    width: 46px; height: 46px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: #fff;
+    flex-shrink: 0;
+  }
+  .header-title { color: #fff; }
+  .header-title h1 { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 600; letter-spacing: 0.04em; }
+  .header-title p { font-size: 11px; color: rgba(255,255,255,0.65); letter-spacing: 0.12em; text-transform: uppercase; margin-top: 2px; }
+
+  .progress-bar-wrap {
+    background: rgba(255,255,255,0.12);
+    border-radius: 20px; height: 6px; width: 180px;
+  }
+  .progress-bar {
+    background: linear-gradient(90deg, var(--gold-light), #f5c842);
+    height: 100%; border-radius: 20px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-label { color: rgba(255,255,255,0.7); font-size: 11px; text-align: right; margin-top: 5px; }
+
+  /* ── STEP NAV ── */
+  .step-nav {
+    background: var(--warm-white);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .step-nav-inner {
+    max-width: 980px; margin: 0 auto;
+    display: flex; padding: 0 28px;
+  }
+  .step-btn {
+    padding: 14px 18px;
+    background: none; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px; font-weight: 500;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+    transition: all 0.2s;
+    display: flex; align-items: center; gap: 7px;
+  }
+  .step-btn .step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--border); color: var(--muted);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 600; flex-shrink: 0;
+    transition: all 0.2s;
+  }
+  .step-btn.active { color: var(--forest); border-bottom-color: var(--forest); }
+  .step-btn.active .step-num { background: var(--forest); color: #fff; }
+  .step-btn.done .step-num { background: var(--gold); color: #fff; }
+  .step-btn.done { color: var(--gold); }
+
+  /* ── MAIN ── */
+  .main { max-width: 980px; margin: 0 auto; padding: 36px 28px 80px; }
+  .step-panel { display: none; }
+  .step-panel.active { display: block; animation: fadeUp 0.35s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+  /* ── SECTION CARD ── */
+  .card {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    box-shadow: 0 2px 16px var(--shadow);
+  }
+  .card-header {
+    display: flex; align-items: center; gap: 14px;
+    margin-bottom: 26px; padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--forest), var(--forest-light));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 18px; flex-shrink: 0;
+  }
+  .card-header h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px; font-weight: 600; color: var(--forest);
+  }
+  .card-header p { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  /* ── FORM ELEMENTS ── */
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+  .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 18px; }
+  .span2 { grid-column: span 2; }
+  .span3 { grid-column: span 3; }
+
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  label.field-label {
+    font-size: 12px; font-weight: 600; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.07em;
+  }
+  input[type=text], input[type=email], input[type=tel], input[type=number],
+  textarea, select {
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; color: var(--ink);
+    background: var(--warm-white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none; width: 100%;
+  }
+  input:focus, textarea:focus, select:focus {
+    border-color: var(--forest);
+    box-shadow: 0 0 0 3px rgba(44,74,62,0.10);
+  }
+  textarea { resize: vertical; min-height: 90px; }
+
+  /* ── MODALITY TABLE ── */
+  .modality-section { margin-bottom: 22px; }
+  .modality-section h3 {
+    font-size: 13px; font-weight: 600; color: var(--forest);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    margin-bottom: 12px; padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .modality-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 10px;
+  }
+  .modality-item {
+    display: flex; align-items: center;
+    background: var(--cream); border: 1.5px solid var(--border);
+    border-radius: 10px; padding: 10px 12px; gap: 10px;
+    transition: border-color 0.2s;
+  }
+  .modality-item:focus-within { border-color: var(--forest-light); }
+  .modality-label {
+    font-size: 13px; color: var(--ink); min-width: 120px; flex-shrink: 0;
+  }
+  .modality-radios { display: flex; gap: 8px; flex-wrap: wrap; }
+  .radio-pill {
+    display: flex; align-items: center; gap: 4px;
+    cursor: pointer;
+    font-size: 11px; font-weight: 500;
+    padding: 3px 9px; border-radius: 20px;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .radio-pill input[type=radio] { display: none; }
+  .radio-pill.better:has(input:checked) { background: #d4f5e9; border-color: #2e9e6e; color: #1a5c3e; }
+  .radio-pill.worse:has(input:checked) { background: #ffe5e5; border-color: #e05555; color: #8b1a1a; }
+  .radio-pill.neutral:has(input:checked) { background: #fff3cd; border-color: #e6a817; color: #7a4f00; }
+
+  /* ── FOOD TABLE ── */
+  .food-table { width: 100%; border-collapse: collapse; }
+  .food-table th {
+    font-size: 11px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--muted);
+    padding: 8px 12px; text-align: center;
+    background: var(--cream); border: 1px solid var(--border);
+  }
+  .food-table th:first-child { text-align: left; }
+  .food-table td {
+    padding: 8px 12px; border: 1px solid var(--border);
+    text-align: center; font-size: 13px;
+  }
+  .food-table tr:nth-child(even) td { background: var(--cream); }
+  .food-table td:first-child { text-align: left; font-weight: 500; }
+  .food-table input[type=checkbox] {
+    width: 16px; height: 16px; cursor: pointer;
+    accent-color: var(--forest);
+  }
+
+  /* ── QUESTION BLOCK ── */
+  .q-block { margin-bottom: 22px; }
+  .q-label {
+    font-size: 13.5px; font-weight: 500; color: var(--ink);
+    margin-bottom: 8px; line-height: 1.5;
+  }
+  .q-label strong { color: var(--forest); }
+
+  /* ── SLEEP CHECKBOXES ── */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px; margin-top: 6px;
+  }
+  .check-item {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; cursor: pointer;
+    padding: 7px 10px; border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--cream);
+    transition: all 0.15s;
+  }
+  .check-item:hover { border-color: var(--forest-light); }
+  .check-item input[type=checkbox] { accent-color: var(--forest); width: 15px; height: 15px; }
+  .check-item:has(input:checked) { background: #e8f4ef; border-color: var(--forest); }
+
+  /* Radio group */
+  .radio-group { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .radio-opt {
+    display: flex; align-items: center; gap: 6px;
+    padding: 7px 14px; border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--cream); font-size: 13px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .radio-opt input[type=radio] { accent-color: var(--forest); }
+  .radio-opt:has(input:checked) { background: #e8f4ef; border-color: var(--forest); color: var(--forest); font-weight: 500; }
+
+  /* ── NAV BUTTONS ── */
+  .form-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 30px; padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    padding: 12px 28px; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-outline {
+    background: transparent; border: 2px solid var(--border);
+    color: var(--muted);
+  }
+  .btn-outline:hover { border-color: var(--forest); color: var(--forest); }
+  .btn-primary {
+    background: var(--forest); color: #fff;
+    box-shadow: 0 4px 14px rgba(44,74,62,0.28);
+  }
+  .btn-primary:hover { background: var(--forest-light); transform: translateY(-1px); }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(184,134,11,0.35);
+  }
+  .btn-gold:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(184,134,11,0.4); }
+
+  /* ── STEP TITLE ── */
+  .step-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px; font-weight: 300; color: var(--forest);
+    margin-bottom: 6px;
+  }
+  .step-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 28px; }
+
+  /* ── SUCCESS SCREEN ── */
+  .success-screen {
+    text-align: center; padding: 60px 20px;
+  }
+  .success-icon {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--forest), var(--forest-light));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px; margin: 0 auto 24px; color: #fff;
+  }
+  .success-screen h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 30px; color: var(--forest); margin-bottom: 10px;
+  }
+  .success-screen p { font-size: 15px; color: var(--muted); max-width: 420px; margin: 0 auto 30px; }
+
+  /* responsive */
+  @media(max-width:640px) {
+    .form-grid, .form-grid-3 { grid-template-columns: 1fr; }
+    .span2, .span3 { grid-column: span 1; }
+    .card { padding: 22px 18px; }
+    .main { padding: 24px 14px 60px; }
+    .header-inner { padding: 14px 16px; }
+    .step-title { font-size: 24px; }
+    .modality-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-logo">
+      <div class="logo-mark">M</div>
+      <div class="header-title">
+        <h1>Mangalmurti Clinic</h1>
+        <p>Dr. Bhakti Patil · General Case Sheet</p>
+      </div>
+    </div>
+    <div>
+      <div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="progress-label" id="progressLabel">Step 1 of 7</div>
+    </div>
+  </div>
+</header>
+
+<!-- STEP NAV -->
+<nav class="step-nav">
+  <div class="step-nav-inner">
+    <button class="step-btn active" onclick="goStep(0)"><span class="step-num">1</span>Patient Info</button>
+    <button class="step-btn" onclick="goStep(1)"><span class="step-num">2</span>Complaints</button>
+    <button class="step-btn" onclick="goStep(2)"><span class="step-num">3</span>Modalities</button>
+    <button class="step-btn" onclick="goStep(3)"><span class="step-num">4</span>Diet & Appetite</button>
+    <button class="step-btn" onclick="goStep(4)"><span class="step-num">5</span>Mind & Personality</button>
+    <button class="step-btn" onclick="goStep(5)"><span class="step-num">6</span>Sleep & Dreams</button>
+    <button class="step-btn" onclick="goStep(6)"><span class="step-num">7</span>Review & Save</button>
+  </div>
+</nav>
+
+<!-- MAIN FORM -->
+<main class="main">
+<form id="caseForm" onsubmit="return false;">
+
+<!-- ══════════ STEP 1: PATIENT INFO ══════════ -->
+<div class="step-panel active" id="step0">
+  <h2 class="step-title">Patient Information</h2>
+  <p class="step-subtitle">Basic identification and contact details</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">👤</div>
+      <div><h2>Personal Details</h2><p>Fill all fields as accurately as possible</p></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="field-label">Full Name *</label>
+        <input type="text" id="p_name" placeholder="Enter full name" required/>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Age *</label>
+        <input type="number" id="p_age" placeholder="e.g. 34" min="0" max="120" required/>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Email Address</label>
+        <input type="email" id="p_email" placeholder="example@email.com"/>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Telephone</label>
+        <input type="tel" id="p_tel" placeholder="+91 XXXXX XXXXX"/>
+      </div>
+      <div class="form-group span2">
+        <label class="field-label">Address</label>
+        <textarea id="p_address" placeholder="Full residential address..." rows="2"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Occupation</label>
+        <input type="text" id="p_occupation" placeholder="e.g. Teacher, Engineer…"/>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Reference (Referred by)</label>
+        <input type="text" id="p_reference" placeholder="Who referred you?"/>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Date of Visit</label>
+        <input type="text" id="p_date" placeholder="DD/MM/YYYY"/>
+      </div>
+      <div class="form-group">
+        <label class="field-label">Gender</label>
+        <div class="radio-group">
+          <label class="radio-opt"><input type="radio" name="p_gender" value="Male"/> Male</label>
+          <label class="radio-opt"><input type="radio" name="p_gender" value="Female"/> Female</label>
+          <label class="radio-opt"><input type="radio" name="p_gender" value="Other"/> Other</label>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-nav">
+    <div></div>
+    <button class="btn btn-primary" onclick="goStep(1)">Next: Complaints →</button>
+  </div>
+</div>
+
+<!-- ══════════ STEP 2: COMPLAINTS ══════════ -->
+<div class="step-panel" id="step1">
+  <h2 class="step-title">Chief Complaints & History</h2>
+  <p class="step-subtitle">Describe your symptoms, past illnesses and family history</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🩺</div>
+      <div><h2>Chief Complaint</h2><p>Describe in as much detail as possible</p></div>
+    </div>
+    <div class="form-group">
+      <label class="field-label">Chief Complaint – describe what happens, when, how often, how long it lasts; how it began and possible reason; whether it has changed in severity or frequency</label>
+      <textarea id="c_chief" rows="5" placeholder="e.g. Severe headache on right side, starts in the morning, lasts 4–6 hours, 2–3 times per week for the past 3 months…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🔍</div>
+      <div><h2>Origin of Cause</h2></div>
+    </div>
+    <div class="form-group">
+      <label class="field-label">Can you trace the origin? Any particular circumstance, accident, illness, mental upset? (e.g., shock, worry, errors in diet, overexertion, exposure to cold/heat)</label>
+      <textarea id="c_origin" rows="4" placeholder="e.g. Complaints began after a car accident in 2019…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">💭</div>
+      <div><h2>Effect of Problem on You</h2></div>
+    </div>
+    <div class="form-group">
+      <label class="field-label">How does this problem affect your daily life, work, relationships and mood?</label>
+      <textarea id="c_effect" rows="4" placeholder="Describe the impact on your daily routine and quality of life…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">📋</div>
+      <div><h2>Past History of Illness</h2></div>
+    </div>
+    <div class="form-group">
+      <label class="field-label">Any past illnesses, surgeries, hospitalizations or significant medical events?</label>
+      <textarea id="c_past" rows="4" placeholder="List all past illnesses with approximate dates and treatments received…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧬</div>
+      <div><h2>Family History of Illness</h2></div>
+    </div>
+    <div class="form-group">
+      <label class="field-label">Any illnesses running in the family? (Parents, siblings, grandparents)</label>
+      <textarea id="c_family" rows="4" placeholder="e.g. Father – diabetes; Mother – hypertension…"></textarea>
+    </div>
+  </div>
+
+  <div class="form-nav">
+    <button class="btn btn-outline" onclick="goStep(0)">← Back</button>
+    <button class="btn btn-primary" onclick="goStep(2)">Next: Modalities →</button>
+  </div>
+</div>
+
+<!-- ══════════ STEP 3: MODALITIES ══════════ -->
+<div class="step-panel" id="step2">
+  <h2 class="step-title">Factors That Affect You</h2>
+  <p class="step-subtitle">For each factor, select whether it makes you feel Better, Worse, or has No Effect</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🌤️</div>
+      <div><h2>Weather & Environment</h2></div>
+    </div>
+    <div class="modality-section">
+      <div class="modality-grid" id="mod_weather"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧍</div>
+      <div><h2>Position & Movement</h2></div>
+    </div>
+    <div class="modality-grid" id="mod_position"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">👁️</div>
+      <div><h2>Senses & Stimuli</h2></div>
+    </div>
+    <div class="modality-grid" id="mod_senses"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🚻</div>
+      <div><h2>Bodily Functions</h2></div>
+    </div>
+    <div class="modality-grid" id="mod_bodily"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">😴</div>
+      <div><h2>Sleep, Eating & Activity</h2></div>
+    </div>
+    <div class="modality-grid" id="mod_sleep"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧠</div>
+      <div><h2>Emotions & Mind</h2></div>
+    </div>
+    <div class="modality-grid" id="mod_mind"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">⏰</div>
+      <div><h2>Time of Day & Miscellaneous</h2></div>
+    </div>
+    <div class="modality-grid" id="mod_time"></div>
+  </div>
+
+  <div class="form-nav">
+    <button class="btn btn-outline" onclick="goStep(1)">← Back</button>
+    <button class="btn btn-primary" onclick="goStep(3)">Next: Diet & Appetite →</button>
+  </div>
+</div>
+
+<!-- ══════════ STEP 4: DIET ══════════ -->
+<div class="step-panel" id="step3">
+  <h2 class="step-title">Appetite, Thirst & Diet</h2>
+  <p class="step-subtitle">Your relationship with food and drink</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🍽️</div>
+      <div><h2>Appetite & Thirst</h2></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group span2">
+        <label class="field-label">How is your appetite? When are you hungry? What happens if you remain hungry for long? How fast do you eat?</label>
+        <textarea id="d_appetite" rows="3" placeholder="Describe your appetite patterns…"></textarea>
+      </div>
+      <div class="form-group span2">
+        <label class="field-label">How much thirst do you have? Are you especially thirsty at any particular time?</label>
+        <textarea id="d_thirst" rows="3" placeholder="Describe your thirst patterns…"></textarea>
+      </div>
+      <div class="form-group span2">
+        <label class="field-label">Any change in taste or feeling in your mouth?</label>
+        <textarea id="d_taste" rows="2" placeholder="e.g. bitter taste in the morning, dry mouth at night…"></textarea>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">✅</div>
+      <div><h2>Food Preferences</h2><p>Tick the checkbox that best describes your preference for each food item</p></div>
+    </div>
+    <div style="overflow-x:auto;">
+    <table class="food-table" id="foodTable">
+      <thead>
+        <tr>
+          <th>Food</th>
+          <th>Like ✓</th>
+          <th>Dislike ✓</th>
+          <th>Disagree ✓</th>
+        </tr>
+      </thead>
+      <tbody id="foodTableBody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="form-nav">
+    <button class="btn btn-outline" onclick="goStep(2)">← Back</button>
+    <button class="btn btn-primary" onclick="goStep(4)">Next: Mind & Personality →</button>
+  </div>
+</div>
+
+<!-- ══════════ STEP 5: MIND ══════════ -->
+<div class="step-panel" id="step4">
+  <h2 class="step-title">Mind, Personality & Emotions</h2>
+  <p class="step-subtitle">This section helps understand your mental and emotional constitution</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧠</div>
+      <div><h2>Personality Overview</h2></div>
+    </div>
+    <div class="form-group">
+      <label class="field-label">Describe your nature and personality in brief (e.g., short-tempered, calm, anxious, sensitive, impulsive, fearful, talkative, quiet, competitive…)</label>
+      <textarea id="m_personality" rows="4" placeholder="Take help of a family member or close friend if needed…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">💬</div>
+      <div><h2>Mental & Emotional Questions</h2></div>
+    </div>
+
+    <div class="q-block">
+      <p class="q-label"><strong>Q1.</strong> What things can upset, worry or disturb you very much? Do you get anxious or angry in any situations?</p>
+      <textarea id="m_q1" rows="3" placeholder="Describe situations or triggers…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q2.</strong> Are you anxious? If yes, about which matters?</p>
+      <textarea id="m_q2" rows="3" placeholder="Health, family, finances, work, future…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q3.</strong> Are you fearful of anything? (Animals, people, being alone, darkness, death, disease, robbers, sudden noises, thunder, the future, high places, etc.)</p>
+      <textarea id="m_q3" rows="3" placeholder="List your fears…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q4.</strong> Are you introverted or extroverted? Please explain.</p>
+      <div class="radio-group" style="margin-bottom:8px;">
+        <label class="radio-opt"><input type="radio" name="m_introvert" value="Introverted"/> Introverted</label>
+        <label class="radio-opt"><input type="radio" name="m_introvert" value="Extroverted"/> Extroverted</label>
+        <label class="radio-opt"><input type="radio" name="m_introvert" value="Ambivert"/> Ambivert</label>
+      </div>
+      <textarea id="m_q4" rows="2" placeholder="Explain further…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q5.</strong> Have you had any period of stress in your life? Any difficult memories from childhood that still affect you?</p>
+      <textarea id="m_q5" rows="4" placeholder="Any major life events, disappointments, childhood memories…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q6.</strong> Do you have any problems or stress in your relationships? (parents, siblings, spouse, children)</p>
+      <textarea id="m_q6" rows="3" placeholder="Describe relationship dynamics…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q7.</strong> What do you do to handle stress? What really works for you?</p>
+      <textarea id="m_q7" rows="3" placeholder="e.g. Exercise, prayer, talking to someone, music…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q8.</strong> Sensitivity – to situations, people, words?</p>
+      <textarea id="m_q8" rows="3" placeholder="What kinds of things affect you deeply or hurt you?"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q9.</strong> Do you have any "fixed" habits? (cleanliness, perfectionism, alcohol, excessive exercise, checking things repeatedly, etc.)</p>
+      <textarea id="m_q9" rows="3" placeholder="Describe unusual or compulsive habits with examples…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q10.</strong> What bodily symptoms do you develop when angry? (e.g., trembling, sweating, palpitations)</p>
+      <textarea id="m_q10" rows="2" placeholder="Physical reactions to anger…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q11.</strong> Do you like company or prefer to remain alone?</p>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="m_company" value="Like company"/> Like company</label>
+        <label class="radio-opt"><input type="radio" name="m_company" value="Prefer to be alone"/> Prefer to be alone</label>
+        <label class="radio-opt"><input type="radio" name="m_company" value="Both equally"/> Both equally</label>
+      </div>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q12.</strong> How seriously are you affected by disorder and untidiness in your surroundings?</p>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="m_order" value="Very much"/> Very much</label>
+        <label class="radio-opt"><input type="radio" name="m_order" value="Somewhat"/> Somewhat</label>
+        <label class="radio-opt"><input type="radio" name="m_order" value="Not much"/> Not much</label>
+        <label class="radio-opt"><input type="radio" name="m_order" value="Not at all"/> Not at all</label>
+      </div>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q13.</strong> What is the greatest grief you have gone through in your life?</p>
+      <textarea id="m_q13" rows="3" placeholder="Describe the experience…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q14.</strong> What are the greatest joys you have had in life?</p>
+      <textarea id="m_q14" rows="3" placeholder="Describe what brings you the most joy…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q15.</strong> What activities do you deeply like?</p>
+      <textarea id="m_q15" rows="2" placeholder="Hobbies, passions, activities you love…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q16.</strong> Are there any matters which you deeply dislike?</p>
+      <textarea id="m_q16" rows="2" placeholder="Things you strongly dislike or avoid…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q17.</strong> Which aspects of your mind and moods are not agreeable to you? Despite awareness, are you unable to change these?</p>
+      <textarea id="m_q17" rows="3" placeholder="e.g. procrastination, anger, overthinking…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q18.</strong> Give a clear picture of your life situation and relationship with each family member, friend, and work associate.</p>
+      <textarea id="m_q18" rows="4" placeholder="Describe your current life situation and key relationships…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🔬</div>
+      <div><h2>Urinary & Sexual Health</h2></div>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q27.</strong> How is your emotional and sexual relationship with your partner? Any problems with sexual function, craving, or performance?</p>
+      <textarea id="m_q27" rows="3" placeholder="Describe any concerns…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q28.</strong> How frequently do you urinate? Colour of urine? Any dribbling or other urinary/renal problems?</p>
+      <textarea id="m_q28" rows="3" placeholder="Describe urinary patterns…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q29.</strong> How is your menses? Is it regular? Any problems – pain, excess bleeding, diminished flow?</p>
+      <textarea id="m_q29" rows="3" placeholder="Describe menstrual patterns (if applicable)…"></textarea>
+    </div>
+  </div>
+
+  <div class="form-nav">
+    <button class="btn btn-outline" onclick="goStep(3)">← Back</button>
+    <button class="btn btn-primary" onclick="goStep(5)">Next: Sleep & Dreams →</button>
+  </div>
+</div>
+
+<!-- ══════════ STEP 6: SLEEP ══════════ -->
+<div class="step-panel" id="step5">
+  <h2 class="step-title">Sleep, Dreams & Childhood</h2>
+  <p class="step-subtitle">Sleep patterns and remarkable personal history</p>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🌙</div>
+      <div><h2>Sleeping Patterns</h2></div>
+    </div>
+
+    <div class="q-block">
+      <p class="q-label"><strong>Q19.</strong> Describe your posture in sleep</p>
+      <div class="radio-group">
+        <label class="radio-opt"><input type="radio" name="s_posture" value="On back"/> On back</label>
+        <label class="radio-opt"><input type="radio" name="s_posture" value="On left side"/> On left side</label>
+        <label class="radio-opt"><input type="radio" name="s_posture" value="On right side"/> On right side</label>
+        <label class="radio-opt"><input type="radio" name="s_posture" value="On abdomen"/> On abdomen</label>
+        <label class="radio-opt"><input type="radio" name="s_posture" value="Varies"/> Varies</label>
+      </div>
+    </div>
+
+    <div class="q-block">
+      <p class="q-label"><strong>Q20.</strong> Are you able to sleep in any position? Which position can you NOT sleep in?</p>
+      <textarea id="s_q20" rows="2" placeholder="Describe positions that are uncomfortable for sleep…"></textarea>
+    </div>
+
+    <div class="q-block">
+      <p class="q-label"><strong>Q21.</strong> During sleep, do you experience any of the following?</p>
+      <div class="checkbox-grid">
+        <label class="check-item"><input type="checkbox" id="sl_snore"/> Snoring</label>
+        <label class="check-item"><input type="checkbox" id="sl_grind"/> Grinding teeth</label>
+        <label class="check-item"><input type="checkbox" id="sl_dribble"/> Dribbling saliva</label>
+        <label class="check-item"><input type="checkbox" id="sl_sweat"/> Sweating</label>
+        <label class="check-item"><input type="checkbox" id="sl_eyes_open"/> Eyes open</label>
+        <label class="check-item"><input type="checkbox" id="sl_mouth_open"/> Mouth open</label>
+        <label class="check-item"><input type="checkbox" id="sl_walk"/> Walking in sleep</label>
+        <label class="check-item"><input type="checkbox" id="sl_talk"/> Talking in sleep</label>
+        <label class="check-item"><input type="checkbox" id="sl_moan"/> Moaning</label>
+        <label class="check-item"><input type="checkbox" id="sl_weep"/> Weeping</label>
+        <label class="check-item"><input type="checkbox" id="sl_restless"/> Restlessness</label>
+        <label class="check-item"><input type="checkbox" id="sl_jerk"/> Wake up with a jerk</label>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">💤</div>
+      <div><h2>Dreams</h2></div>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q22.</strong> What are the dreams you get?</p>
+      <textarea id="s_q22" rows="3" placeholder="Describe the nature and themes of your dreams…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q23.</strong> Any repeated dream patterns?</p>
+      <textarea id="s_q23" rows="2" placeholder="Describe any recurring dreams…"></textarea>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q24.</strong> Any notable dreams from childhood?</p>
+      <textarea id="s_q24" rows="2" placeholder="Dreams you remember from childhood…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">🧒</div>
+      <div><h2>Childhood</h2></div>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q25.</strong> Nature, habits, fears, dreams, relationships and sensitivities during childhood</p>
+      <textarea id="s_q25" rows="4" placeholder="Describe your childhood personality and experiences…"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-icon">⭐</div>
+      <div><h2>Peculiar Symptoms</h2></div>
+    </div>
+    <div class="q-block">
+      <p class="q-label"><strong>Q26.</strong> Any peculiar symptoms? (e.g. sweating while eating; complaints only at night; same dream recurs; sensation of hair on tongue; feeling someone is behind you…)</p>
+      <textarea id="s_q26" rows="4" placeholder="Describe any unusual or peculiar experiences you have noticed…"></textarea>
+    </div>
+  </div>
+
+  <div class="form-nav">
+    <button class="btn btn-outline" onclick="goStep(4)">← Back</button>
+    <button class="btn btn-primary" onclick="goStep(6)">Review & Save →</button>
+  </div>
+</div>
+
+<!-- ══════════ STEP 7: REVIEW ══════════ -->
+<div class="step-panel" id="step6">
+  <h2 class="step-title">Review & Generate PDF</h2>
+  <p class="step-subtitle">Review a summary of your entries, then download the complete case sheet as a PDF</p>
+
+  <div class="card" id="summaryCard">
+    <div class="card-header">
+      <div class="card-icon">📄</div>
+      <div><h2>Summary Preview</h2><p>A brief overview of what you have filled</p></div>
+    </div>
+    <div id="summaryContent" style="font-size:13.5px; line-height:1.8; color:var(--ink);"></div>
+  </div>
+
+  <div style="text-align:center; padding: 20px 0 10px;">
+    <button class="btn btn-gold" onclick="generatePDF()" style="font-size:16px; padding:16px 40px;">
+      ⬇ Download Case Sheet as PDF
+    </button>
+    <p style="font-size:12px; color:var(--muted); margin-top:10px;">A professionally formatted PDF will be downloaded to your device.</p>
+  </div>
+
+  <div class="form-nav">
+    <button class="btn btn-outline" onclick="goStep(5)">← Back</button>
+    <div></div>
+  </div>
+</div>
+
+</form>
+</main>
+
+<script>
+// ── STEP MANAGEMENT ──
+const totalSteps = 7;
+let currentStep = 0;
+
+function goStep(n) {
+  document.getElementById('step' + currentStep).classList.remove('active');
+  document.querySelectorAll('.step-btn')[currentStep].classList.remove('active');
+  if (currentStep < n) document.querySelectorAll('.step-btn')[currentStep].classList.add('done');
+  currentStep = n;
+  document.getElementById('step' + currentStep).classList.add('active');
+  document.querySelectorAll('.step-btn')[currentStep].classList.add('active');
+  document.querySelectorAll('.step-btn')[currentStep].classList.remove('done');
+  const pct = Math.round(((n + 1) / totalSteps) * 100);
+  document.getElementById('progressBar').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = 'Step ' + (n+1) + ' of ' + totalSteps;
+  if (n === 6) buildSummary();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ── MODALITIES ──
+const modalityGroups = {
+  mod_weather: [
+    'Hot weather','Cold weather','Rainy weather','Cloudy weather',
+    'Change of season','Thunderstorm','Warm bath','Cold bathing',
+    'Sun','Draft air','Near the sea','Fanning','Moonlight','Full Moon / New Moon'
+  ],
+  mod_position: [
+    'Covering','Lying with head low','Sitting','Sitting erect','Standing',
+    'Looking up','Looking down','Looking from high places','Looking from moving object',
+    'Stooping','Hanging the limbs','Raising the arms','Stretching'
+  ],
+  mod_senses: [
+    'Noise','Sudden noise','Music','Light','Strong smells',
+    'Touch','Pressure','Massage','Tight clothes','Moving the eyes',
+    'Opening the eyes','Closing the eyes'
+  ],
+  mod_bodily: [
+    'When constipated','Before urine','During urine','After urine',
+    'Before menses','During menses','After menses',
+    'After sweating','When fasting','After sexual intercourse',
+    'Dust','Smoke','Coughing','Sneezing','Passing gas',
+    'Belching','Vomiting','Yawning','Swallowing','Blowing nose',
+    'Biting or chewing','Opening the mouth','Brushing teeth',
+    'Combing hair','After haircut','Shaving','Getting feet wet','Working in water'
+  ],
+  mod_sleep: [
+    'Before sleep','During sleep','After sleep','After afternoon nap',
+    'Loss of sleep','After eating','Over eating','Drinking',
+    'Physical exertion','Writing','Reading','Talking','Laughing'
+  ],
+  mod_mind: [
+    'Before important engagement','Before exams','When angry','When worried','When sad',
+    'After weeping','Consolation / sympathy','In a crowd','In a closed room',
+    'When thinking of illness','When alone','In company',
+    'Listening to others talk','Smoking'
+  ],
+  mod_time: [
+    'Morning','Afternoon','Evening','Night','Bathing',
+    'Before stools','During stools','After stools',
+    'Before stool','During stool','After stool'
+  ]
+};
+
+// deduplicate time group
+modalityGroups.mod_time = ['Morning','Afternoon','Evening','Night','Bathing',
+  'Before stools','During stools','After stools'];
+
+function buildModalities() {
+  for (const [id, items] of Object.entries(modalityGroups)) {
+    const container = document.getElementById(id);
+    if (!container) continue;
+    items.forEach(item => {
+      const key = 'mod_' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+      container.innerHTML += `
+        <div class="modality-item">
+          <span class="modality-label">${item}</span>
+          <div class="modality-radios">
+            <label class="radio-pill better"><input type="radio" name="${key}" value="Better"/>✓ Better</label>
+            <label class="radio-pill worse"><input type="radio" name="${key}" value="Worse"/>✗ Worse</label>
+            <label class="radio-pill neutral"><input type="radio" name="${key}" value="No effect"/>~ None</label>
+          </div>
+        </div>`;
+    });
+  }
+}
+
+// ── FOOD TABLE ──
+const foods = [
+  'Bitter','Salt extra','Sweet','Sour','Bread','Butter','Fats','Milk','Coffee','Mud / Chalk',
+  'Eggs','Spicy food','Meat','Fish','Cabbage','Onions','Warm food / drink',
+  'Cold food / drink','Fruits','Anything else'
+];
+function buildFoodTable() {
+  const tbody = document.getElementById('foodTableBody');
+  foods.forEach(f => {
+    const k = f.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    tbody.innerHTML += `<tr>
+      <td>${f}</td>
+      <td><input type="checkbox" id="f_like_${k}"/></td>
+      <td><input type="checkbox" id="f_dislike_${k}"/></td>
+      <td><input type="checkbox" id="f_disagree_${k}"/></td>
+    </tr>`;
+  });
+}
+
+// ── SUMMARY ──
+function val(id) { const el = document.getElementById(id); return el ? el.value.trim() : ''; }
+function radio(name) {
+  const el = document.querySelector(`input[name="${name}"]:checked`);
+  return el ? el.value : '—';
+}
+function buildSummary() {
+  const lines = [];
+  const add = (label, value) => {
+    if (value && value !== '—') lines.push(`<div style="margin-bottom:10px;"><strong style="color:var(--forest);">${label}:</strong><br/>${value}</div>`);
+  };
+  add('Patient Name', val('p_name'));
+  add('Age', val('p_age'));
+  add('Gender', radio('p_gender'));
+  add('Occupation', val('p_occupation'));
+  add('Chief Complaint', val('c_chief'));
+  add('Origin of Cause', val('c_origin'));
+  add('Effect on Patient', val('c_effect'));
+  add('Past History', val('c_past'));
+  add('Family History', val('c_family'));
+  add('Appetite', val('d_appetite'));
+  add('Thirst', val('d_thirst'));
+  add('Personality', val('m_personality'));
+  add('Things that upset / worry', val('m_q1'));
+  add('Anxiety about', val('m_q2'));
+  add('Fears', val('m_q3'));
+  add('Introvert / Extrovert', radio('m_introvert') + ' – ' + val('m_q4'));
+  add('Stress periods', val('m_q5'));
+  add('Relationship stress', val('m_q6'));
+  add('Stress coping', val('m_q7'));
+  add('Sleep posture', radio('s_posture'));
+  const sleepChecks = ['sl_snore','sl_grind','sl_dribble','sl_sweat','sl_eyes_open','sl_mouth_open','sl_walk','sl_talk','sl_moan','sl_weep','sl_restless','sl_jerk'];
+  const sleepLabels = ['Snoring','Grinding teeth','Dribbling saliva','Sweating','Eyes open','Mouth open','Walking','Talking','Moaning','Weeping','Restlessness','Wake with jerk'];
+  const sleepChecked = sleepChecks.filter((id,i) => document.getElementById(id) && document.getElementById(id).checked).map((id,i) => sleepLabels[sleepChecks.indexOf(id)]);
+  if (sleepChecked.length) add('Sleep symptoms', sleepChecked.join(', '));
+  add('Dreams', val('s_q22'));
+  add('Recurring dreams', val('s_q23'));
+  add('Peculiar symptoms', val('s_q26'));
+  document.getElementById('summaryContent').innerHTML = lines.join('') || '<p style="color:var(--muted);">No data entered yet. Please go back and fill the form.</p>';
+}
+
+// ── PDF GENERATION ──
+async function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
+  const W = 210, margin = 18, cw = W - margin * 2;
+  let y = 0;
+
+  function newPage() {
+    doc.addPage();
+    y = 18;
+    addPageHeader();
+  }
+  function checkY(needed) { if (y + needed > 275) newPage(); }
+
+  function addPageHeader() {
+    doc.setFillColor(44, 74, 62);
+    doc.rect(0, 0, W, 14, 'F');
+    doc.setFont('helvetica','bold');
+    doc.setFontSize(9); doc.setTextColor(255,255,255);
+    doc.text('MANGALMURTI CLINIC  ·  Dr. Bhakti Patil  ·  General Case Sheet', margin, 9.5);
+    doc.setTextColor(0,0,0);
+  }
+
+  // ── COVER ──
+  doc.setFillColor(44, 74, 62);
+  doc.rect(0, 0, W, 60, 'F');
+  doc.setFillColor(184, 134, 11);
+  doc.rect(0, 58, W, 3, 'F');
+
+  doc.setFont('times','italic');
+  doc.setFontSize(11); doc.setTextColor(255,220,100);
+  doc.text('General Case Sheet', margin, 22);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(26); doc.setTextColor(255,255,255);
+  doc.text('MANGALMURTI CLINIC', margin, 36);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(11); doc.setTextColor(200,230,220);
+  doc.text('Dr. Bhakti Patil  ·  Homeopathy', margin, 46);
+
+  y = 75;
+  doc.setTextColor(0,0,0);
+
+  // Patient info box
+  const pName = val('p_name') || '—';
+  const pAge = val('p_age') || '—';
+  const pGender = radio('p_gender');
+  const pOcc = val('p_occupation') || '—';
+  const pDate = val('p_date') || new Date().toLocaleDateString('en-IN');
+  const pEmail = val('p_email') || '—';
+  const pTel = val('p_tel') || '—';
+  const pAddr = val('p_address') || '—';
+  const pRef = val('p_reference') || '—';
+
+  doc.setFillColor(245, 241, 230);
+  doc.roundedRect(margin, y, cw, 52, 4, 4, 'F');
+  doc.setDrawColor(184,134,11); doc.setLineWidth(0.5);
+  doc.roundedRect(margin, y, cw, 52, 4, 4, 'S');
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(44,74,62);
+  doc.text('PATIENT DETAILS', margin + 5, y + 8);
+  doc.setLineWidth(0.3); doc.setDrawColor(184,134,11);
+  doc.line(margin + 5, y + 10, margin + cw - 5, y + 10);
+
+  const pi = (label, value, x, yy) => {
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(107,99,87);
+    doc.text(label.toUpperCase(), x, yy);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(26,26,26);
+    doc.text(value.length > 32 ? value.substring(0,32)+'…' : value, x, yy + 5.5);
+  };
+  const col1 = margin + 5, col2 = margin + 60, col3 = margin + 120;
+  pi('Name', pName, col1, y + 17);
+  pi('Age', pAge, col2, y + 17);
+  pi('Gender', pGender, col3, y + 17);
+  pi('Occupation', pOcc, col1, y + 30);
+  pi('Tel', pTel, col2, y + 30);
+  pi('Email', pEmail, col3, y + 30);
+  pi('Date', pDate, col1, y + 43);
+  pi('Reference', pRef, col2, y + 43);
+
+  y += 62;
+
+  // ── HELPER FUNCTIONS ──
+  function sectionHeader(title, icon='') {
+    checkY(14);
+    doc.setFillColor(44, 74, 62);
+    doc.roundedRect(margin, y, cw, 9, 2, 2, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(255,255,255);
+    doc.text((icon ? icon + ' ' : '') + title.toUpperCase(), margin + 5, y + 6.2);
+    doc.setTextColor(0,0,0);
+    y += 13;
+  }
+
+  function subHeader(title) {
+    checkY(10);
+    doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(44,74,62);
+    doc.text(title, margin, y);
+    doc.setDrawColor(184,134,11); doc.setLineWidth(0.3);
+    doc.line(margin, y+1.5, margin+cw, y+1.5);
+    doc.setTextColor(0,0,0);
+    y += 6;
+  }
+
+  function labelValue(label, value) {
+    if (!value || value === '—') return;
+    checkY(8);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor(107,99,87);
+    doc.text(label + ':', margin, y);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(26,26,26);
+    const lines = doc.splitTextToSize(value, cw - 2);
+    lines.forEach(line => {
+      checkY(5.5);
+      doc.text(line, margin + 2, y + 4.5);
+      y += 5;
+    });
+    y += 3;
+  }
+
+  function textBlock(label, value) {
+    if (!value) return;
+    checkY(12);
+    doc.setFillColor(248,246,242);
+    const textLines = doc.splitTextToSize(value, cw - 10);
+    const bh = textLines.length * 5.5 + 10;
+    checkY(bh);
+    doc.roundedRect(margin, y, cw, bh, 2, 2, 'F');
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(107,99,87);
+    doc.text(label.toUpperCase(), margin + 4, y + 5.5);
+    doc.setFont('helvetica','normal'); doc.setFontSize(9.5); doc.setTextColor(26,26,26);
+    textLines.forEach((line, i) => {
+      doc.text(line, margin + 4, y + 11 + i * 5.5);
+    });
+    y += bh + 5;
+  }
+
+  // ── SECTION: COMPLAINTS ──
+  sectionHeader('Chief Complaints & History');
+  textBlock('Chief Complaint', val('c_chief'));
+  textBlock('Origin of Cause', val('c_origin'));
+  textBlock('Effect on Patient', val('c_effect'));
+  textBlock('Past History of Illness', val('c_past'));
+  textBlock('Family History of Illness', val('c_family'));
+
+  // ── SECTION: MODALITIES ──
+  sectionHeader('Factors That Affect You (Modalities)');
+  const allMods = [];
+  for (const [,items] of Object.entries(modalityGroups)) {
+    items.forEach(item => {
+      const key = 'mod_' + item.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+      const checked = document.querySelector(`input[name="${key}"]:checked`);
+      if (checked && checked.value !== 'No effect') {
+        allMods.push({ item, value: checked.value });
+      }
+    });
+  }
+  if (allMods.length) {
+    const better = allMods.filter(m => m.value === 'Better').map(m=>m.item);
+    const worse = allMods.filter(m => m.value === 'Worse').map(m=>m.item);
+    if (better.length) {
+      checkY(12);
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(46,158,110);
+      doc.text('BETTER FROM:', margin, y); y += 5;
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(26,26,26);
+      const bLines = doc.splitTextToSize(better.join(' · '), cw);
+      bLines.forEach(l => { checkY(5.5); doc.text(l, margin+2, y); y += 5; });
+      y += 4;
+    }
+    if (worse.length) {
+      checkY(12);
+      doc.setFont('helvetica','bold'); doc.setFontSize(9); doc.setTextColor(200,70,70);
+      doc.text('WORSE FROM:', margin, y); y += 5;
+      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(26,26,26);
+      const wLines = doc.splitTextToSize(worse.join(' · '), cw);
+      wLines.forEach(l => { checkY(5.5); doc.text(l, margin+2, y); y += 5; });
+      y += 4;
+    }
+  } else {
+    doc.setFont('helvetica','italic'); doc.setFontSize(9); doc.setTextColor(150,140,130);
+    doc.text('No modalities selected.', margin, y); y += 8;
+  }
+
+  // ── SECTION: DIET ──
+  sectionHeader('Appetite, Thirst & Diet');
+  textBlock('Appetite', val('d_appetite'));
+  textBlock('Thirst', val('d_thirst'));
+  textBlock('Taste / Mouth', val('d_taste'));
+
+  // Food table
+  const foodRows = [];
+  foods.forEach(f => {
+    const k = f.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'');
+    const liked     = document.getElementById('f_like_'+k)?.checked;
+    const disliked  = document.getElementById('f_dislike_'+k)?.checked;
+    const disagrees = document.getElementById('f_disagree_'+k)?.checked;
+    if (liked)     foodRows.push(f + ': Likes');
+    if (disliked)  foodRows.push(f + ': Dislikes');
+    if (disagrees) foodRows.push(f + ': Disagrees');
+  });
+  if (foodRows.length) {
+    checkY(12);
+    subHeader('Food Preferences');
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(26,26,26);
+    foodRows.forEach(r => {
+      checkY(6); doc.text('• ' + r, margin+2, y); y += 5.5;
+    });
+    y += 4;
+  }
+
+  // ── SECTION: MIND ──
+  sectionHeader('Mind, Personality & Emotions');
+  textBlock('Personality Overview', val('m_personality'));
+  textBlock('Q1 · What upsets / worries you', val('m_q1'));
+  textBlock('Q2 · Anxiety – about what', val('m_q2'));
+  textBlock('Q3 · Fears', val('m_q3'));
+  if (radio('m_introvert') !== '—') labelValue('Q4 · Introvert / Extrovert', radio('m_introvert') + (val('m_q4') ? ' – ' + val('m_q4') : ''));
+  textBlock('Q5 · Stress periods / Memories', val('m_q5'));
+  textBlock('Q6 · Relationship stress', val('m_q6'));
+  textBlock('Q7 · Stress coping', val('m_q7'));
+  textBlock('Q8 · Sensitivity', val('m_q8'));
+  textBlock('Q9 · Fixed habits', val('m_q9'));
+  textBlock('Q10 · Bodily reactions to anger', val('m_q10'));
+  if (radio('m_company') !== '—') labelValue('Q11 · Company preference', radio('m_company'));
+  if (radio('m_order') !== '—') labelValue('Q12 · Sensitivity to disorder', radio('m_order'));
+  textBlock('Q13 · Greatest grief', val('m_q13'));
+  textBlock('Q14 · Greatest joys', val('m_q14'));
+  textBlock('Q15 · Activities liked', val('m_q15'));
+  textBlock('Q16 · Matters disliked', val('m_q16'));
+  textBlock('Q17 · Unchangeable aspects', val('m_q17'));
+  textBlock('Q18 · Life situation & relationships', val('m_q18'));
+  textBlock('Q27 · Sexual / emotional health', val('m_q27'));
+  textBlock('Q28 · Urinary patterns', val('m_q28'));
+  textBlock('Q29 · Menses', val('m_q29'));
+
+  // ── SECTION: SLEEP ──
+  sectionHeader('Sleep, Dreams & Childhood');
+  if (radio('s_posture') !== '—') labelValue('Sleep posture', radio('s_posture'));
+  textBlock('Positions uncomfortable for sleep', val('s_q20'));
+  const sleepChecks2 = ['sl_snore','sl_grind','sl_dribble','sl_sweat','sl_eyes_open','sl_mouth_open','sl_walk','sl_talk','sl_moan','sl_weep','sl_restless','sl_jerk'];
+  const sleepLabels2 = ['Snoring','Grinding teeth','Dribbling saliva','Sweating','Eyes open','Mouth open','Walking','Talking','Moaning','Weeping','Restlessness','Waking with a jerk'];
+  const sc = sleepChecks2.filter(id => document.getElementById(id)?.checked).map((_,i)=>sleepLabels2[sleepChecks2.indexOf(_)]);
+
+  // fix sleepChecks2 iteration
+  const scFixed = [];
+  sleepChecks2.forEach((id,i) => { if (document.getElementById(id)?.checked) scFixed.push(sleepLabels2[i]); });
+  if (scFixed.length) {
+    checkY(8);
+    doc.setFont('helvetica','bold'); doc.setFontSize(8); doc.setTextColor(107,99,87);
+    doc.text('SLEEP SYMPTOMS:', margin, y); y+=5;
+    doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(26,26,26);
+    const sl = doc.splitTextToSize(scFixed.join(', '), cw);
+    sl.forEach(l => { checkY(6); doc.text(l, margin+2, y); y+=5; });
+    y+=4;
+  }
+  textBlock('Dreams', val('s_q22'));
+  textBlock('Recurring dreams', val('s_q23'));
+  textBlock('Childhood dreams', val('s_q24'));
+  textBlock('Childhood – nature & memories', val('s_q25'));
+  textBlock('Peculiar symptoms', val('s_q26'));
+
+  // ── FOOTER ──
+  const pageCount = doc.internal.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFillColor(245,241,230);
+    doc.rect(0, 288, W, 10, 'F');
+    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor(107,99,87);
+    doc.text('Mangalmurti Clinic  ·  Dr. Bhakti Patil', margin, 294);
+    doc.text(`Page ${i} of ${pageCount}`, W - margin - 12, 294);
+  }
+
+  const safeName = (val('p_name') || 'Patient').replace(/\s+/g,'_');
+  doc.save(`Mangalmurti_CaseSheet_${safeName}.pdf`);
+}
+
+// ── INIT ──
+buildModalities();
+buildFoodTable();
+
+// Set today's date
+document.getElementById('p_date').value = new Date().toLocaleDateString('en-IN');
+</script>
+</body>
+</html>
