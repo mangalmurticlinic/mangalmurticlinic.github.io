@@ -20,7 +20,6 @@
     scroll-behavior: smooth;
   }
 
-  /* luxurious clinic palette */
   :root {
     --deep-teal: #1a4a3f;
     --gold-accent: #c17f3a;
@@ -34,7 +33,6 @@
     --border-soft: #e2d8cb;
   }
 
-  /* header with refined depth */
   .clinic-header {
     background: var(--deep-teal);
     position: sticky;
@@ -109,7 +107,6 @@
     font-weight: 500;
   }
 
-  /* step navigation tabs */
   .step-tabs {
     background: white;
     border-bottom: 1px solid var(--border-soft);
@@ -168,7 +165,6 @@
     color: #a47c45;
   }
 
-  /* main content */
   .main-container {
     max-width: 1100px;
     margin: 0 auto;
@@ -200,7 +196,6 @@
     padding-left: 12px;
   }
 
-  /* elegant cards */
   .clinic-card {
     background: white;
     border-radius: 24px;
@@ -244,7 +239,6 @@
     letter-spacing: 0.3px;
   }
 
-  /* forms */
   .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -318,7 +312,6 @@
     font-weight: 500;
   }
 
-  /* modalities pills */
   .modality-grid {
     display: flex;
     flex-wrap: wrap;
@@ -352,12 +345,10 @@
     border: 1px solid #cfc3b4;
     transition: all 0.1s;
   }
-  .mod-badge.selected-better { background: #dff0e9; border-color: #2c7a5a; color: #1c5e44; }
   .selected-better { background: #dff0e9; border-color: #2c7a5a; color: #1c5e44; }
   .selected-worse { background: #ffe6e5; border-color: #c75c4a; color: #9b3a2a; }
   .selected-neutral { background: #fff0db; border-color: #d9a13b; color: #8b5e1c; }
 
-  /* food table */
   .food-table-wrapper {
     overflow-x: auto;
   }
@@ -388,7 +379,6 @@
     accent-color: var(--gold-accent);
   }
 
-  /* navigation buttons */
   .nav-buttons {
     display: flex;
     justify-content: space-between;
@@ -428,7 +418,6 @@
     box-shadow: 0 6px 12px rgba(193, 127, 58, 0.25);
   }
 
-  /* summary */
   .summary-glass {
     background: #fefcf8;
     border-radius: 28px;
@@ -489,49 +478,44 @@
 </main>
 
 <script>
-  // -------- DATA & CONFIGURATION ----------
-  const stepNames = [
-    "Patient Info", "Complaints", "Modalities", "Diet & Appetite", 
-    "Mind & Personality", "Sleep & Dreams", "Review & PDF"
-  ];
-  
+  // Global variables
   let currentStepIdx = 0;
 
-  // modality datasets (structured for clarity)
+  // Modality datasets
   const modalityCategories = {
-    weather: ['Hot weather','Cold weather','Rainy weather','Cloudy weather','Change of season','Thunderstorm','Warm bath','Cold bathing','Sun','Draft air'],
-    position: ['Covering','Lying with head low','Sitting','Standing','Stooping','Hanging limbs','Raising arms','Stretching'],
-    senses: ['Noise','Sudden noise','Music','Light','Strong smells','Touch','Pressure','Massage','Tight clothes'],
-    bodily: ['When constipated','Before urine','During urine','After urine','Before menses','During menses','After menses','After sweating','When fasting','Coughing','Sneezing','Belching'],
-    sleepAct: ['Before sleep','During sleep','After sleep','Loss of sleep','After eating','Over eating','Physical exertion','Reading','Talking'],
-    mind: ['When angry','When worried','When sad','After weeping','In a crowd','When alone','In company','Consolation'],
-    timeMisc: ['Morning','Afternoon','Evening','Night','Bathing','Before stools','During stools','After stools']
+    'Weather & Environment': ['Hot weather', 'Cold weather', 'Rainy weather', 'Cloudy weather', 'Change of season', 'Thunderstorm', 'Warm bath', 'Cold bathing', 'Sun', 'Draft air'],
+    'Position & Movement': ['Covering', 'Lying with head low', 'Sitting', 'Standing', 'Stooping', 'Hanging limbs', 'Raising arms', 'Stretching'],
+    'Senses & Stimuli': ['Noise', 'Sudden noise', 'Music', 'Light', 'Strong smells', 'Touch', 'Pressure', 'Massage', 'Tight clothes'],
+    'Bodily Functions': ['When constipated', 'Before urine', 'During urine', 'After urine', 'Before menses', 'During menses', 'After menses', 'After sweating', 'When fasting', 'Coughing', 'Sneezing', 'Belching'],
+    'Sleep & Activity': ['Before sleep', 'During sleep', 'After sleep', 'Loss of sleep', 'After eating', 'Over eating', 'Physical exertion', 'Reading', 'Talking'],
+    'Emotions & Mind': ['When angry', 'When worried', 'When sad', 'After weeping', 'In a crowd', 'When alone', 'In company', 'Consolation'],
+    'Time & Misc': ['Morning', 'Afternoon', 'Evening', 'Night', 'Bathing', 'Before stools', 'During stools', 'After stools']
   };
+  
   const allModalityItems = Object.values(modalityCategories).flat();
-  
-  // food items
-  const foodItems = ['Bitter','Salt extra','Sweet','Sour','Bread','Butter','Fats','Milk','Coffee','Mud / Chalk','Eggs','Spicy food','Meat','Fish','Cabbage','Onions','Warm food / drink','Cold food / drink','Fruits','Anything else'];
-  
-  // ---------- HELPER FUNCTIONS -------------
+  const foodItems = ['Bitter', 'Salt extra', 'Sweet', 'Sour', 'Bread', 'Butter', 'Fats', 'Milk', 'Coffee', 'Mud / Chalk', 'Eggs', 'Spicy food', 'Meat', 'Fish', 'Cabbage', 'Onions', 'Warm food / drink', 'Cold food / drink', 'Fruits', 'Anything else'];
+
+  // Storage functions
   function saveModalityValue(item, value) {
-    localStorage.setItem(`mod_${item.replace(/\s/g,'_')}`, value);
+    localStorage.setItem(`mod_${item.replace(/\s/g, '_')}`, value);
   }
+  
   function getModalityValue(item) {
-    return localStorage.getItem(`mod_${item.replace(/\s/g,'_')}`) || '';
+    return localStorage.getItem(`mod_${item.replace(/\s/g, '_')}`) || '';
   }
+  
   function saveField(id, value) {
     if (id) localStorage.setItem(`field_${id}`, value);
   }
+  
   function getField(id) {
     return localStorage.getItem(`field_${id}`) || '';
   }
-  
+
   function gatherAllData() {
     let data = {};
-    document.querySelectorAll('input, select, textarea, [data-save]').forEach(el => {
-      if (el.id && (el.tagName === 'INPUT' && (el.type === 'text' || el.type === 'number' || el.type === 'email' || el.type === 'tel'))) {
-        data[el.id] = el.value;
-      } else if (el.id && el.tagName === 'TEXTAREA') {
+    document.querySelectorAll('input, select, textarea').forEach(el => {
+      if (el.id && (el.type === 'text' || el.type === 'number' || el.type === 'email' || el.type === 'tel' || el.tagName === 'TEXTAREA')) {
         data[el.id] = el.value;
       } else if (el.type === 'checkbox' && el.id) {
         data[el.id] = el.checked;
@@ -539,11 +523,10 @@
         data[el.name] = el.value;
       }
     });
-    // add modalities
+    
     allModalityItems.forEach(item => {
-      let key = `mod_${item.replace(/\s/g,'_')}`;
       let val = getModalityValue(item);
-      if (val) data[key] = val;
+      if (val) data[`mod_${item.replace(/\s/g, '_')}`] = val;
     });
     return data;
   }
@@ -559,82 +542,117 @@
         }
       }
     });
+    
     document.querySelectorAll('input[type="radio"]').forEach(radio => {
       if (radio.name && getField(radio.name) === radio.value) radio.checked = true;
     });
-    // modality pills re-rendered after DOM
   }
-  
+
   function attachSaveEvents() {
     document.querySelectorAll('input, select, textarea').forEach(el => {
       if (el.id) {
-        el.addEventListener('input', () => { saveField(el.id, el.type === 'checkbox' ? el.checked : el.value); });
+        el.addEventListener('input', () => { 
+          saveField(el.id, el.type === 'checkbox' ? el.checked : el.value); 
+        });
       }
       if (el.type === 'radio' && el.name) {
-        el.addEventListener('change', () => { if (el.checked) saveField(el.name, el.value); });
+        el.addEventListener('change', () => { 
+          if (el.checked) saveField(el.name, el.value); 
+        });
       }
     });
   }
-  
-  // progress
-  function updateProgress() {
-    let percent = ((currentStepIdx+1)/7)*100;
-    document.getElementById('globalProgress').style.width = percent+'%';
-    document.getElementById('stepCounter').innerText = `Step ${currentStepIdx+1} of 7`;
-    const tabs = document.querySelectorAll('.step-tab');
-    tabs.forEach((tab, idx) => {
-      if (idx < currentStepIdx) tab.classList.add('completed');
-      else tab.classList.remove('completed');
-      if (idx === currentStepIdx) tab.classList.add('active');
-      else tab.classList.remove('active');
-    });
-  }
-  
+
+  // Navigation function - FIXED
   function goToStep(step) {
     if (step < 0) step = 0;
     if (step > 6) step = 6;
-    document.querySelectorAll('.step-panel').forEach(panel => panel.classList.remove('active-panel'));
-    document.getElementById(`panel_${step}`).classList.add('active-panel');
+    
+    // Hide all panels
+    document.querySelectorAll('.step-panel').forEach(panel => {
+      panel.classList.remove('active-panel');
+    });
+    
+    // Show selected panel
+    const targetPanel = document.getElementById(`panel_${step}`);
+    if (targetPanel) {
+      targetPanel.classList.add('active-panel');
+    }
+    
     currentStepIdx = step;
     updateProgress();
+    updateTabs();
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    
     if (step === 6) buildEnhancedSummary();
   }
-  
-  // build summary dynamically
+
+  function updateProgress() {
+    let percent = ((currentStepIdx + 1) / 7) * 100;
+    const progressBar = document.getElementById('globalProgress');
+    if (progressBar) progressBar.style.width = percent + '%';
+    const stepCounter = document.getElementById('stepCounter');
+    if (stepCounter) stepCounter.innerText = `Step ${currentStepIdx + 1} of 7`;
+  }
+
+  function updateTabs() {
+    const tabs = document.querySelectorAll('.step-tab');
+    tabs.forEach((tab, idx) => {
+      if (idx < currentStepIdx) {
+        tab.classList.add('completed');
+      } else {
+        tab.classList.remove('completed');
+      }
+      if (idx === currentStepIdx) {
+        tab.classList.add('active');
+      } else {
+        tab.classList.remove('active');
+      }
+    });
+  }
+
   function buildEnhancedSummary() {
     const data = gatherAllData();
     const summaryDiv = document.getElementById('summaryDetailed');
     if (!summaryDiv) return;
+    
     let html = `<div class="summary-glass">`;
     html += `<div class="success-icon">📋 Complete case abstract</div>`;
     if (data.p_name) html += `<div class="summary-item"><strong>Patient</strong><br/>${data.p_name} | Age ${data.p_age || '-'} | Gender ${data.p_gender || '-'}</div>`;
-    if (data.c_chief) html += `<div class="summary-item"><strong>Chief complaint</strong><br/>${data.c_chief.substring(0, 180)}${data.c_chief.length>180?'…':''}</div>`;
+    if (data.c_chief) html += `<div class="summary-item"><strong>Chief complaint</strong><br/>${data.c_chief.substring(0, 180)}${data.c_chief.length > 180 ? '…' : ''}</div>`;
     if (data.m_personality) html += `<div class="summary-item"><strong>Personality</strong><br/>${data.m_personality.substring(0, 120)}</div>`;
+    
     const betterList = [], worseList = [];
     allModalityItems.forEach(it => {
       let val = getModalityValue(it);
       if (val === 'Better') betterList.push(it);
       if (val === 'Worse') worseList.push(it);
     });
-    if (betterList.length) html += `<div class="summary-item"><strong>🌿 Better from</strong><br/>${betterList.slice(0,8).join(', ')}${betterList.length>8?' …':''}</div>`;
-    if (worseList.length) html += `<div class="summary-item"><strong>⚠️ Worse from</strong><br/>${worseList.slice(0,8).join(', ')}${worseList.length>8?' …':''}</div>`;
+    
+    if (betterList.length) html += `<div class="summary-item"><strong>🌿 Better from</strong><br/>${betterList.slice(0, 8).join(', ')}${betterList.length > 8 ? ' …' : ''}</div>`;
+    if (worseList.length) html += `<div class="summary-item"><strong>⚠️ Worse from</strong><br/>${worseList.slice(0, 8).join(', ')}${worseList.length > 8 ? ' …' : ''}</div>`;
     html += `</div>`;
     summaryDiv.innerHTML = html;
   }
-  
-  // ---------- DYNAMIC RENDER OF PANELS & MODALITIES ----------
+
+  // Render modality panel
   function renderModalityPanel() {
     let modalHtml = `<div class="clinic-card"><div class="card-header-flex"><div class="card-icon">🌡️</div><div><h2>Factors that modify</h2><p>Select better / worse / neutral</p></div></div>`;
+    
     for (let [cat, items] of Object.entries(modalityCategories)) {
-      modalHtml += `<div style="margin-bottom: 28px;"><h3 style="font-size:0.9rem; margin-bottom: 10px; color:#4c6b5e;">${cat.toUpperCase()}</h3><div class="modality-grid">`;
+      modalHtml += `<div style="margin-bottom: 28px;"><h3 style="font-size:0.9rem; margin-bottom: 10px; color:#4c6b5e;">${cat}</h3><div class="modality-grid">`;
+      
       items.forEach(item => {
         const saved = getModalityValue(item);
         modalHtml += `<div class="modality-pill"><span class="mod-name">${item}</span><div class="mod-options">`;
-        ['Better','Worse','No effect'].forEach(opt => {
+        
+        ['Better', 'Worse', 'No effect'].forEach(opt => {
           let cls = '';
-          if (saved === opt) cls = `selected-${opt.toLowerCase().replace(' ','')}`;
-          modalHtml += `<span class="mod-badge ${cls}" data-moditem="${item}" data-modval="${opt}">${opt === 'No effect' ? '⚪' : (opt==='Better'?'✓':'✗')} ${opt}</span>`;
+          if (saved === opt) {
+            cls = `selected-${opt.toLowerCase().replace(' ', '')}`;
+          }
+          const icon = opt === 'No effect' ? '⚪' : (opt === 'Better' ? '✓' : '✗');
+          modalHtml += `<span class="mod-badge ${cls}" data-moditem="${item}" data-modval="${opt}">${icon} ${opt}</span>`;
         });
         modalHtml += `</div></div>`;
       });
@@ -643,9 +661,11 @@
     modalHtml += `</div>`;
     return modalHtml;
   }
-  
+
+  // Render food table
   function renderFoodTable() {
     let table = `<div class="food-table-wrapper"><table class="food-table"><thead><tr><th>Food</th><th>👍 Like</th><th>👎 Dislike</th><th>⚠️ Disagree</th></tr></thead><tbody>`;
+    
     foodItems.forEach(food => {
       const key = food.replace(/[^a-z0-9]/gi, '_');
       table += `<tr>
@@ -658,87 +678,144 @@
     table += `</tbody></table></div>`;
     return table;
   }
-  
-  // generate panels programmatically (clean)
+
+  // Panel definitions
   const panelsHtml = [
-    // step0
-    `<div class="step-panel" id="panel_0"><h2 class="step-heading">Patient Information</h2><div class="step-sub">Essential identifiers & contact</div>
-      <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">👤</div><div><h2>Personal details</h2></div></div>
-      <div class="grid-2"><div class="form-field"><label class="field-tag">Full name *</label><input type="text" id="p_name" placeholder="Full name"/></div>
-      <div class="form-field"><label class="field-tag">Age *</label><input type="number" id="p_age" /></div>
-      <div class="form-field"><label class="field-tag">Email</label><input type="email" id="p_email"/></div>
-      <div class="form-field"><label class="field-tag">Phone</label><input type="tel" id="p_tel"/></div>
-      <div class="full-width form-field"><label class="field-tag">Address</label><textarea id="p_address" rows="2"></textarea></div>
-      <div class="form-field"><label class="field-tag">Occupation</label><input id="p_occupation"/></div>
-      <div class="form-field"><label class="field-tag">Referred by</label><input id="p_reference"/></div>
-      <div class="form-field"><label class="field-tag">Visit date</label><input type="text" id="p_date" placeholder="DD/MM/YYYY"/></div>
-      <div class="form-field"><label class="field-tag">Gender</label><div class="radio-group-modern"><label class="radio-label"><input type="radio" name="p_gender" value="Female"/> Female</label><label class="radio-label"><input type="radio" name="p_gender" value="Male"/> Male</label><label class="radio-label"><input type="radio" name="p_gender" value="Other"/> Other</label></div></div>
-      </div></div><div class="nav-buttons"><div></div><button class="btn btn-primary" onclick="goToStep(1)">Next →</button></div></div>`,
-      
-    // step1 complaints
-    `<div class="step-panel" id="panel_1"><h2 class="step-heading">Clinical history</h2><div class="step-sub">Chief complaints & timeline</div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">🩺</div><div><h2>Chief complaint</h2></div></div><textarea id="c_chief" rows="4" placeholder="Describe symptoms, onset, duration, triggers..."></textarea></div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">📜</div><div><h2>Origin & effect</h2></div></div><div class="form-field"><label>Origin (accident, stress, illness)</label><textarea id="c_origin" rows="3"></textarea><label>Impact on daily life</label><textarea id="c_effect" rows="3"></textarea></div></div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">📁</div><div><h2>Past & family history</h2></div></div><div class="form-field"><label>Past illnesses / surgeries</label><textarea id="c_past" rows="3"></textarea><label>Family history</label><textarea id="c_family" rows="3"></textarea></div></div>
-    <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(1)">← Back</button><button class="btn btn-primary" onclick="goToStep(2)">Next →</button></div></div>`,
+    // Step 0 - Patient Info
+    `<div class="step-panel active-panel" id="panel_0">
+      <h2 class="step-heading">Patient Information</h2>
+      <div class="step-sub">Essential identifiers & contact</div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">👤</div><div><h2>Personal details</h2></div></div>
+        <div class="grid-2">
+          <div class="form-field"><label class="field-tag">Full name *</label><input type="text" id="p_name" placeholder="Full name"/></div>
+          <div class="form-field"><label class="field-tag">Age *</label><input type="number" id="p_age" /></div>
+          <div class="form-field"><label class="field-tag">Email</label><input type="email" id="p_email"/></div>
+          <div class="form-field"><label class="field-tag">Phone</label><input type="tel" id="p_tel"/></div>
+          <div class="full-width form-field"><label class="field-tag">Address</label><textarea id="p_address" rows="2"></textarea></div>
+          <div class="form-field"><label class="field-tag">Occupation</label><input id="p_occupation"/></div>
+          <div class="form-field"><label class="field-tag">Referred by</label><input id="p_reference"/></div>
+          <div class="form-field"><label class="field-tag">Visit date</label><input type="text" id="p_date" placeholder="DD/MM/YYYY"/></div>
+          <div class="form-field"><label class="field-tag">Gender</label>
+            <div class="radio-group-modern">
+              <label class="radio-label"><input type="radio" name="p_gender" value="Female"/> Female</label>
+              <label class="radio-label"><input type="radio" name="p_gender" value="Male"/> Male</label>
+              <label class="radio-label"><input type="radio" name="p_gender" value="Other"/> Other</label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="nav-buttons"><div></div><button class="btn btn-primary" onclick="goToStep(1)">Next →</button></div>
+    </div>`,
     
-    // step2 modalities
-    `<div class="step-panel" id="panel_2"><h2 class="step-heading">Modalities</h2><div class="step-sub">What makes you feel better or worse</div><div id="modalitiesRenderTarget"></div><div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(1)">← Back</button><button class="btn btn-primary" onclick="goToStep(3)">Next →</button></div></div>`,
+    // Step 1 - Complaints
+    `<div class="step-panel" id="panel_1">
+      <h2 class="step-heading">Clinical history</h2>
+      <div class="step-sub">Chief complaints & timeline</div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">🩺</div><div><h2>Chief complaint</h2></div></div>
+        <textarea id="c_chief" rows="4" placeholder="Describe symptoms, onset, duration, triggers..."></textarea>
+      </div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">📜</div><div><h2>Origin & effect</h2></div></div>
+        <div class="form-field"><label>Origin (accident, stress, illness)</label><textarea id="c_origin" rows="3"></textarea></div>
+        <div class="form-field"><label>Impact on daily life</label><textarea id="c_effect" rows="3"></textarea></div>
+      </div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">📁</div><div><h2>Past & family history</h2></div></div>
+        <div class="form-field"><label>Past illnesses / surgeries</label><textarea id="c_past" rows="3"></textarea></div>
+        <div class="form-field"><label>Family history</label><textarea id="c_family" rows="3"></textarea></div>
+      </div>
+      <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(0)">← Back</button><button class="btn btn-primary" onclick="goToStep(2)">Next →</button></div>
+    </div>`,
     
-    // step3 diet
-    `<div class="step-panel" id="panel_3"><h2 class="step-heading">Diet & Appetite</h2><div class="step-sub">Eating patterns, thirst & preferences</div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">🍽️</div><div><h2>Appetite & thirst</h2></div></div><div class="form-field"><label>Appetite description</label><textarea id="d_appetite" rows="2"></textarea><label>Thirst & patterns</label><textarea id="d_thirst" rows="2"></textarea><label>Taste changes / mouth feeling</label><textarea id="d_taste" rows="2"></textarea></div></div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">✅</div><div><h2>Food preferences</h2></div></div><div id="foodTableTarget"></div></div>
-    <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(2)">← Back</button><button class="btn btn-primary" onclick="goToStep(4)">Next →</button></div></div>`,
+    // Step 2 - Modalities
+    `<div class="step-panel" id="panel_2">
+      <h2 class="step-heading">Modalities</h2>
+      <div class="step-sub">What makes you feel better or worse</div>
+      <div id="modalitiesRenderTarget"></div>
+      <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(1)">← Back</button><button class="btn btn-primary" onclick="goToStep(3)">Next →</button></div>
+    </div>`,
     
-    // step4 mind (condensed but robust)
-    `<div class="step-panel" id="panel_4"><h2 class="step-heading">Mind & Emotions</h2><div class="step-sub">Personality, fears, stressors</div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">🧠</div><div><h2>Psychological profile</h2></div></div><div class="form-field"><label>Describe your nature (temper, anxiety, sensitivity)</label><textarea id="m_personality" rows="2"></textarea><label>What upsets you most?</label><textarea id="m_q1" rows="2"></textarea><label>Anxieties / fears</label><textarea id="m_q2" rows="2"></textarea><label>Stress coping & life stress</label><textarea id="m_q5" rows="2"></textarea><label>Introvert/Extrovert</label><div class="radio-group-modern"><label class="radio-label"><input type="radio" name="m_introvert" value="Introverted"/>Introverted</label><label class="radio-label"><input type="radio" name="m_introvert" value="Extroverted"/>Extroverted</label></div><label>Any peculiar habits or grief</label><textarea id="m_q13" rows="2" placeholder="Greatest grief, joys..."></textarea></div></div>
-    <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(3)">← Back</button><button class="btn btn-primary" onclick="goToStep(5)">Next →</button></div></div>`,
+    // Step 3 - Diet
+    `<div class="step-panel" id="panel_3">
+      <h2 class="step-heading">Diet & Appetite</h2>
+      <div class="step-sub">Eating patterns, thirst & preferences</div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">🍽️</div><div><h2>Appetite & thirst</h2></div></div>
+        <div class="form-field"><label>Appetite description</label><textarea id="d_appetite" rows="2"></textarea></div>
+        <div class="form-field"><label>Thirst & patterns</label><textarea id="d_thirst" rows="2"></textarea></div>
+        <div class="form-field"><label>Taste changes / mouth feeling</label><textarea id="d_taste" rows="2"></textarea></div>
+      </div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">✅</div><div><h2>Food preferences</h2></div></div>
+        <div id="foodTableTarget"></div>
+      </div>
+      <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(2)">← Back</button><button class="btn btn-primary" onclick="goToStep(4)">Next →</button></div>
+    </div>`,
     
-    // step5 sleep
-    `<div class="step-panel" id="panel_5"><h2 class="step-heading">Sleep & Dreams</h2><div class="step-sub">Restorative patterns & subconscious</div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">🌙</div><div><h2>Sleep habits</h2></div></div><div class="form-field"><label>Sleep posture</label><div class="radio-group-modern"><label class="radio-label"><input type="radio" name="s_posture" value="On back"/>Back</label><label class="radio-label"><input type="radio" name="s_posture" value="On side"/>Side</label><label class="radio-label"><input type="radio" name="s_posture" value="On abdomen"/>Abdomen</label></div><label>Associated symptoms during sleep (snoring, grinding, sweating, talking)</label><div class="grid-2"><label><input type="checkbox" id="sl_snore"/> Snore</label><label><input type="checkbox" id="sl_grind"/> Grind</label><label><input type="checkbox" id="sl_sweat"/> Sweat</label><label><input type="checkbox" id="sl_talk"/> Talk</label></div><label>Dream themes / recurrent dreams</label><textarea id="s_q22" rows="3"></textarea><label>Peculiar symptoms</label><textarea id="s_q26" rows="2"></textarea></div></div>
-    <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(4)">← Back</button><button class="btn btn-primary" onclick="goToStep(6)">Review & Save</button></div></div>`,
+    // Step 4 - Mind
+    `<div class="step-panel" id="panel_4">
+      <h2 class="step-heading">Mind & Emotions</h2>
+      <div class="step-sub">Personality, fears, stressors</div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">🧠</div><div><h2>Psychological profile</h2></div></div>
+        <div class="form-field"><label>Describe your nature (temper, anxiety, sensitivity)</label><textarea id="m_personality" rows="2"></textarea></div>
+        <div class="form-field"><label>What upsets you most?</label><textarea id="m_q1" rows="2"></textarea></div>
+        <div class="form-field"><label>Anxieties / fears</label><textarea id="m_q2" rows="2"></textarea></div>
+        <div class="form-field"><label>Stress coping & life stress</label><textarea id="m_q5" rows="2"></textarea></div>
+        <div class="form-field"><label>Introvert/Extrovert</label>
+          <div class="radio-group-modern">
+            <label class="radio-label"><input type="radio" name="m_introvert" value="Introverted"/>Introverted</label>
+            <label class="radio-label"><input type="radio" name="m_introvert" value="Extroverted"/>Extroverted</label>
+          </div>
+        </div>
+        <div class="form-field"><label>Greatest grief or joys</label><textarea id="m_q13" rows="2" placeholder="Greatest grief, joys..."></textarea></div>
+      </div>
+      <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(3)">← Back</button><button class="btn btn-primary" onclick="goToStep(5)">Next →</button></div>
+    </div>`,
     
-    // step6 review
-    `<div class="step-panel" id="panel_6"><h2 class="step-heading">Review & Generate PDF</h2><div class="step-sub">Final checks and clinical documentation</div>
-    <div class="clinic-card"><div class="card-header-flex"><div class="card-icon">📄</div><div><h2>Summary snapshot</h2></div></div><div id="summaryDetailed"></div></div>
-    <div style="text-align:center; margin: 20px 0;"><button class="btn btn-gold" id="pdfDownloadBtn" style="padding: 14px 36px;">✨ Download Premium PDF</button></div>
-    <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(5)">← Back</button><div></div></div></div>`
+    // Step 5 - Sleep
+    `<div class="step-panel" id="panel_5">
+      <h2 class="step-heading">Sleep & Dreams</h2>
+      <div class="step-sub">Restorative patterns & subconscious</div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">🌙</div><div><h2>Sleep habits</h2></div></div>
+        <div class="form-field"><label>Sleep posture</label>
+          <div class="radio-group-modern">
+            <label class="radio-label"><input type="radio" name="s_posture" value="On back"/>Back</label>
+            <label class="radio-label"><input type="radio" name="s_posture" value="On side"/>Side</label>
+            <label class="radio-label"><input type="radio" name="s_posture" value="On abdomen"/>Abdomen</label>
+          </div>
+        </div>
+        <div class="form-field"><label>Associated symptoms during sleep</label>
+          <div class="grid-2">
+            <label><input type="checkbox" id="sl_snore"/> Snore</label>
+            <label><input type="checkbox" id="sl_grind"/> Grind</label>
+            <label><input type="checkbox" id="sl_sweat"/> Sweat</label>
+            <label><input type="checkbox" id="sl_talk"/> Talk</label>
+          </div>
+        </div>
+        <div class="form-field"><label>Dream themes / recurrent dreams</label><textarea id="s_q22" rows="3"></textarea></div>
+        <div class="form-field"><label>Peculiar symptoms</label><textarea id="s_q26" rows="2"></textarea></div>
+      </div>
+      <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(4)">← Back</button><button class="btn btn-primary" onclick="goToStep(6)">Next →</button></div>
+    </div>`,
+    
+    // Step 6 - Review
+    `<div class="step-panel" id="panel_6">
+      <h2 class="step-heading">Review & Generate PDF</h2>
+      <div class="step-sub">Final checks and clinical documentation</div>
+      <div class="clinic-card">
+        <div class="card-header-flex"><div class="card-icon">📄</div><div><h2>Summary snapshot</h2></div></div>
+        <div id="summaryDetailed"></div>
+      </div>
+      <div style="text-align:center; margin: 20px 0;"><button class="btn btn-gold" id="pdfDownloadBtn" style="padding: 14px 36px;">✨ Download Premium PDF</button></div>
+      <div class="nav-buttons"><button class="btn btn-outline" onclick="goToStep(5)">← Back</button><div></div></div>
+    </div>`
   ];
-  
-  function renderFullApp() {
-    const container = document.getElementById('panelsContainer');
-    container.innerHTML = panelsHtml.join('');
-    // dynamic modalities
-    const modTarget = document.getElementById('modalitiesRenderTarget');
-    if (modTarget) modTarget.innerHTML = renderModalityPanel();
-    const foodTarget = document.getElementById('foodTableTarget');
-    if (foodTarget) foodTarget.innerHTML = renderFoodTable();
-    // attach modality events after render
-    document.querySelectorAll('.mod-badge').forEach(badge => {
-      badge.addEventListener('click', (e) => {
-        const item = badge.dataset.moditem;
-        const val = badge.dataset.modval;
-        if (item) {
-          saveModalityValue(item, val);
-          const parent = badge.parentElement.parentElement;
-          parent.querySelectorAll('.mod-badge').forEach(b => b.classList.remove('selected-better','selected-worse','selected-neutral'));
-          badge.classList.add(`selected-${val.toLowerCase().replace(' ','')}`);
-        }
-      });
-    });
-    populateFromStorage();
-    attachSaveEvents();
-    // set date default
-    if (document.getElementById('p_date') && !getField('p_date')) document.getElementById('p_date').value = new Date().toLocaleDateString('en-IN');
-    // pdf button event
-    const pdfBtn = document.getElementById('pdfDownloadBtn');
-    if (pdfBtn) pdfBtn.addEventListener('click', () => generatePdfDocument());
-  }
-  
-  // Enhanced PDF generation with clean layout (using jspdf)
+
+  // PDF Generation
   async function generatePdfDocument() {
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4' });
@@ -748,53 +825,110 @@
     const maxWidth = 180;
     
     doc.setFillColor(26, 74, 63); doc.rect(0, 0, 210, 28, 'F');
-    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(255,215,160);
+    doc.setFont('helvetica', 'bold'); doc.setFontSize(16); doc.setTextColor(255, 215, 160);
     doc.text('Mangalmurti Clinic – Complete Case Sheet', marginX, 18);
-    doc.setFontSize(9); doc.setTextColor(220,220,210);
+    doc.setFontSize(9); doc.setTextColor(220, 220, 210);
     doc.text(`Patient: ${data.p_name || '—'}  |  Record Date: ${data.p_date || new Date().toLocaleDateString()}`, marginX, 26);
-    doc.setTextColor(0,0,0);
+    doc.setTextColor(0, 0, 0);
     y = 38;
+    
     function addText(title, content, yPos) {
       if (!content) return yPos;
-      doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(44,74,62);
+      doc.setFont('helvetica', 'bold'); doc.setFontSize(10); doc.setTextColor(44, 74, 62);
       doc.text(title, marginX, yPos);
-      doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(50,50,50);
+      doc.setFont('helvetica', 'normal'); doc.setFontSize(9); doc.setTextColor(50, 50, 50);
       const lines = doc.splitTextToSize(content, maxWidth);
-      lines.forEach(l => { yPos += 5; doc.text(l, marginX+2, yPos); });
+      lines.forEach(l => { yPos += 5; doc.text(l, marginX + 2, yPos); });
       return yPos + 4;
     }
+    
     y = addText('Chief Complaint', data.c_chief, y);
     y = addText('Origin & Effect', (data.c_origin || '') + ' | ' + (data.c_effect || ''), y);
     y = addText('Past / Family History', (data.c_past || '') + ' | ' + (data.c_family || ''), y);
-    const betterMods = allModalityItems.filter(it => getModalityValue(it) === 'Better').slice(0,12);
-    const worseMods = allModalityItems.filter(it => getModalityValue(it) === 'Worse').slice(0,12);
-    if(betterMods.length) y = addText('Better from', betterMods.join(', '), y);
-    if(worseMods.length) y = addText('Worse from', worseMods.join(', '), y);
-    y = addText('Personality & Emotions', data.m_personality + (data.m_q1 ? ' | Upsets: '+data.m_q1 : ''), y);
+    
+    const betterMods = allModalityItems.filter(it => getModalityValue(it) === 'Better').slice(0, 12);
+    const worseMods = allModalityItems.filter(it => getModalityValue(it) === 'Worse').slice(0, 12);
+    if (betterMods.length) y = addText('Better from', betterMods.join(', '), y);
+    if (worseMods.length) y = addText('Worse from', worseMods.join(', '), y);
+    y = addText('Personality & Emotions', data.m_personality + (data.m_q1 ? ' | Upsets: ' + data.m_q1 : ''), y);
     y = addText('Sleep features', (data.s_q22 || '') + ' | ' + (data.sl_snore ? 'Snoring ' : ''), y);
-    if(y > 260) doc.addPage();
-    doc.setFontSize(8); doc.setTextColor(100,100,100);
+    
+    if (y > 260) doc.addPage();
+    doc.setFontSize(8); doc.setTextColor(100, 100, 100);
     doc.text('Generated by Mangalmurti Clinic System', marginX, 285);
     doc.save(`Mangalmurti_Case_${data.p_name || 'patient'}.pdf`);
   }
-  
+
+  // Build step tabs
   function buildStepTabs() {
     const container = document.getElementById('stepTabsContainer');
+    if (!container) return;
+    container.innerHTML = '';
+    const stepNames = ['Patient Info', 'Complaints', 'Modalities', 'Diet & Appetite', 'Mind & Personality', 'Sleep & Dreams', 'Review & PDF'];
+    
     stepNames.forEach((name, idx) => {
       const btn = document.createElement('button');
       btn.className = 'step-tab';
       if (idx === 0) btn.classList.add('active');
-      btn.innerHTML = `<span class="step-number">${idx+1}</span><span>${name}</span>`;
+      btn.innerHTML = `<span class="step-number">${idx + 1}</span><span>${name}</span>`;
       btn.onclick = () => goToStep(idx);
       container.appendChild(btn);
     });
   }
+
+  // Initialize app
+  function init() {
+    const container = document.getElementById('panelsContainer');
+    if (container) container.innerHTML = panelsHtml.join('');
+    
+    buildStepTabs();
+    
+    // Render modality panel
+    const modTarget = document.getElementById('modalitiesRenderTarget');
+    if (modTarget) modTarget.innerHTML = renderModalityPanel();
+    
+    // Render food table
+    const foodTarget = document.getElementById('foodTableTarget');
+    if (foodTarget) foodTarget.innerHTML = renderFoodTable();
+    
+    // Attach modality click events
+    document.querySelectorAll('.mod-badge').forEach(badge => {
+      badge.addEventListener('click', (e) => {
+        const item = badge.dataset.moditem;
+        const val = badge.dataset.modval;
+        if (item) {
+          saveModalityValue(item, val);
+          const parent = badge.closest('.mod-options');
+          if (parent) {
+            parent.querySelectorAll('.mod-badge').forEach(b => {
+              b.classList.remove('selected-better', 'selected-worse', 'selected-neutral');
+            });
+          }
+          badge.classList.add(`selected-${val.toLowerCase().replace(' ', '')}`);
+        }
+      });
+    });
+    
+    populateFromStorage();
+    attachSaveEvents();
+    
+    // Set default date
+    const dateInput = document.getElementById('p_date');
+    if (dateInput && !getField('p_date')) {
+      dateInput.value = new Date().toLocaleDateString('en-IN');
+      saveField('p_date', dateInput.value);
+    }
+    
+    // PDF button
+    const pdfBtn = document.getElementById('pdfDownloadBtn');
+    if (pdfBtn) pdfBtn.addEventListener('click', generatePdfDocument);
+    
+    updateProgress();
+    updateTabs();
+  }
   
-  // initialization
-  renderFullApp();
-  buildStepTabs();
-  updateProgress();
-  window.goToStep = goToStep;
+  // Start the app
+  init();
 </script>
 </body>
 </html>
